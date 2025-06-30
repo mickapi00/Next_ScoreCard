@@ -1,7 +1,8 @@
 // filepath: /Users/brownie/Modalscore/my-app/postcss.config.js
+
 module.exports = {
-  plugins: [
-    require('@tailwindcss/postcss'),
-    require('autoprefixer'),
-  ],
+  plugins: {
+    '@tailwindcss/postcss': {},
+    autoprefixer: {},
+  },
 };
