@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { fetchCourses} from "./services/scorecard.service";
+import { fetchCourses } from "./services/scorecard.service";
 import { fetchLayouts } from "./services/scorecard.service";
 import { fetchMarkers } from "./services/scorecard.service";
 
@@ -15,28 +15,24 @@ import { MarkersInterface } from "@/app/@type/Markers.Interface";
 import { useRouter } from "next/navigation";
 
 export default function ScorecardPage() {
-
-
   const router = useRouter();
   const [date, setDate] = useState<Date>(new Date());
   const [courses, setCourses] = useState<CoursesInterface[]>([]);
   const [layouts, setLayout] = useState<LayoutsInterface[]>([]);
   const [markers, setMarkers] = useState<MarkersInterface[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string>("");
-  const [selectedMarker, setSelectedMarker] = useState<string>("");
   const [loadingCourses, setLoadingCourses] = useState(true);
-  const [layoutsFront, setLayoutsFront] = useState<LayoutsInterface[]>([]);
-  const [layoutsBack, setLayoutsBack] = useState<LayoutsInterface[]>([]);
-  const [selectedLayoutBack,setselectedLayoutBack] = useState<string>("");
-  const [selectedLayoutFront,setselectedLayoutFront] = useState<string>("");
-
+  const [selectedLayoutFront, setselectedLayoutFront] = useState<string>("");
+  const [selectedLayoutBack, setselectedLayoutBack] = useState<string>("");
+  const [selectedMarkerFront, setSelectedMarkerFront] = useState("");
+  const [selectedMarkerBack, setSelectedMarkerBack] = useState("");
 
   useEffect(() => {
     const load = async () => {
       try {
         setLoadingCourses(true);
         const data = await fetchCourses();
-        setCourses(data.filter(c => c.name));
+        setCourses(data.filter((c) => c.name));
       } catch (err) {
         console.error(err);
       } finally {
@@ -48,44 +44,38 @@ export default function ScorecardPage() {
 
   useEffect(() => {
     if (!selectedCourse) return;
-    fetchLayouts(selectedCourse)
-      .then(setLayout)
-      .catch(console.error);
+    fetchLayouts(selectedCourse).then(setLayout).catch(console.error);
   }, [selectedCourse]);
 
-  useEffect(() => 
-    {
-
+  useEffect(() => {
     if (!selectedLayoutFront || !selectedLayoutBack) {
-    setMarkers([]);
-    setSelectedMarker("");
-    return;
-  }
-  // ดึง markers โดยใช้ layout ใด layout หนึ่ง (หรือจะส่งทั้งสองก็ได้ถ้า API รองรับ)
-    fetchMarkers(selectedLayoutBack || selectedLayoutBack)
-    .then(setMarkers)
-    .catch(console.error);
+      setMarkers([]);
+      setSelectedMarkerFront("");
+      setSelectedMarkerBack("");
+      return;
+    }
+    fetchMarkers(selectedLayoutBack).then(setMarkers).catch(console.error);
   }, [selectedLayoutBack, selectedLayoutFront]);
 
   const handleSubmit = () => {
-    const payload = {
+    const params = new URLSearchParams({
+      layoutfront: selectedLayoutFront,
+      layoutback: selectedLayoutBack,
+      markerfront: selectedMarkerFront,
+      markerback: selectedMarkerBack,
       date: format(date, "yyyy-MM-dd"),
       course: selectedCourse,
-      layoutback: selectedLayoutBack,
-      layoutfront: selectedLayoutFront,
-      markers: selectedMarker,
-    };
-    console.log("Sending data to backend:", payload);
-    router.push("/nextpage");
-    // TODO: POST fetch
+    });
+    router.push(`/nextpage?${params.toString()}`);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <div className="w-80 min-h-[600px] flex flex-col space-y-6 p-8 border shadow-2xl rounded-3xl bg-white">
-        <h1 className="text-3xl font-bold text-gray-900 mb-1">Scorecard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-1">Scorecard </h1>
         <p className="text-gray-500 text-sm text-center mb-6">
-          Store and archive scorecards for future reference.<br />
+          Store and archive scorecards for future reference.
+          <br />
           Access round history for analysis or sharing.
         </p>
         <hr className="w-full border-t border-gray-200 mb-4" />
@@ -111,8 +101,10 @@ export default function ScorecardPage() {
                 onChange={(e) => setSelectedCourse(e.target.value)}
               >
                 <option value="">Select course</option>
-                {courses.map(c => (
-                  <option key={c.courseId} value={c.courseId}>{c.name}</option>
+                {courses.map((c) => (
+                  <option key={c.courseId} value={c.courseId}>
+                    {c.name}
+                  </option>
                 ))}
               </select>
             )}
@@ -120,51 +112,79 @@ export default function ScorecardPage() {
 
           <div>
             <Label>Layout Front</Label>
-          <select
+            <select
               className="w-full border rounded p-2"
               value={selectedLayoutFront}
               onChange={(e) => setselectedLayoutFront(e.target.value)}
-              >
-                <option value=""> Select layout(Front)</option>
-                  {layouts.map(l => (
-                //<option key={l.courseId + "-front"} value={l.courselayoutId}>{l.courselayout}</option>
-                <option key={l.courselayoutId} value={l.courselayoutId}>{l.courselayout}</option>
+            >
+              <option value="">Select layout (Front)</option>
+              {layouts.map((l) => (
+                <option key={l.courselayoutId} value={l.courselayoutId}>
+                  {l.courselayout}
+                </option>
               ))}
-         </select>
-        </div>
+            </select>
+          </div>
 
           <div>
             <Label>Layout Back</Label>
-          <select
+            <select
               className="w-full border rounded p-2 bg-red-100"
               value={selectedLayoutBack}
               onChange={(e) => setselectedLayoutBack(e.target.value)}
-          >
+            >
               <option value="">Select layout (Back)</option>
-              {layouts.map(l => (
-              <option key={l.courselayoutId} value={l.courselayoutId}>{l.courselayout}</option>
+              {layouts.map((l) => (
+                <option key={l.courselayoutId} value={l.courselayoutId}>
+                  {l.courselayout}
+                </option>
               ))}
             </select>
-        </div>
-
+          </div>
 
           <div>
-            <Label>Markers</Label>
+            <Label>Marker Front</Label>
             <select
               className="w-full border rounded p-2"
-              value={selectedMarker}
-              onChange={(e) => setSelectedMarker(e.target.value)}
+              value={selectedMarkerFront}
+              onChange={(e) => setSelectedMarkerFront(e.target.value)}
             >
-              <option value="">Select marker</option>
-              {markers.map(m => (
-                <option key={m.markersId} value={m.markersDetails}>{m.color}</option>
+              <option value="">Select marker (Front)</option>
+              {markers.map((m) => (
+                <option key={m.markersId} value={m.markersId}>
+                  {m.color}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <Label>Marker Back</Label>
+            <select
+              className="w-full border rounded p-2"
+              value={selectedMarkerBack}
+              onChange={(e) => setSelectedMarkerBack(e.target.value)}
+            >
+              <option value="">Select marker (Back)</option>
+              {markers.map((m) => (
+                <option key={m.markersId} value={m.markersId}>
+                  {m.color}
+                </option>
               ))}
             </select>
           </div>
         </div>
 
-        <Button className="w-full mt-4 bg-black text-white py-3 rounded-xl" onClick={handleSubmit}
-          disabled={!selectedMarker}>
+        <Button
+          className="w-full mt-4 bg-black text-white py-3 rounded-xl"
+          onClick={handleSubmit}
+          disabled={
+            !selectedLayoutFront ||
+            !selectedLayoutBack ||
+            !selectedMarkerFront ||
+            !selectedMarkerBack
+          }
+        >
           Next
         </Button>
       </div>
