@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Type } from "lucide-react";
 import clsx from "clsx";
 // Simple cn utility function
 // const cn = (...classes: (string | undefined)[]) => {
@@ -45,74 +44,48 @@ export const ScorecardTable = React.forwardRef<
   ScorecardTableProps
 >(({ title, startHole, pars, scores, total, onScoreChange }, ref) => {
   return (
-    <div
-      ref={ref}
-      className={clsx(
-        "w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm bg-white"
-      )}
-    >
+    <div ref={ref} className="scorecard-table">
       {/* Header Row */}
-      <div className="flex bg-gray-50 border-b border-gray-200">
-        <div className="flex-1 px-3 py-2 text-sm font-medium text-gray-900 border-r border-gray-200">
-          HOLE
-        </div>
+      <div className="scorecard-row header-row">
+        <div className="scorecard-cell">HOLE</div>
         {Array.from({ length: 9 }, (_, i) => (
-          <div
-            key={i}
-            className="flex-1 px-3 py-2 text-sm font-medium text-gray-900 text-center border-r border-gray-200"
-          >
+          <div key={i} className="scorecard-cell">
             {startHole + i}
           </div>
         ))}
-        <div className="flex-1 px-3 py-2 text-sm font-medium text-gray-900 text-center">
-          {title}
-        </div>
+        <div className="scorecard-cell">{title}</div>
       </div>
 
-      {/* Par Row */}
-      <div className="flex bg-gray-50 border-b border-gray-200">
-        <div className="flex-1 px-3 py-2 text-sm font-medium text-gray-900 border-r border-gray-200">
-          PAR
-        </div>
+      <div className="scorecard-row par-row">
+        <div className="scorecard-cell">PAR</div>
         {pars.map((par, index) => (
-          <div
-            key={index}
-            className="flex-1 px-3 py-2 text-sm text-gray-900 text-center border-r border-gray-200"
-          >
+          <div key={index} className="scorecard-cell">
             {par}
           </div>
         ))}
-        <div className="flex-1 px-3 py-2 text-sm font-medium text-gray-900 text-center">
-          36
-        </div>
+
+        <div className="scorecard-cell">36</div>
       </div>
 
-      {/* Score Row */}
-      <div className="flex bg-white">
-        <div className="flex-1 px-3 py-2 text-sm font-medium text-gray-900 border-r border-gray-200">
-          SCORE
-        </div>
+      <div className="scorecard-row score-section">
+        <div className="scorecard-cell">SCORE</div>
         {scores.map((score, index) => (
-          <div
-            key={index}
-            className="flex-1 px-1 py-2 border-r border-gray-200"
-          >
-            <Inputprop
+          <div key={index} className="scorecard-cell">
+            <input
               type="number"
+              className="score-input"
               value={score}
               onChange={(e) => onScoreChange(index, e.target.value)}
               min="1"
               max="15"
-              className="text-center h-8"
               placeholder="0"
             />
           </div>
         ))}
-        <div className="flex-1 px-3 py-2 text-sm font-bold text-gray-900 text-center">
-          {total || ""}
-        </div>
+        <div className="scorecard-cell">{total || ""}</div>
       </div>
     </div>
   );
 });
+
 export default ScorecardTable;

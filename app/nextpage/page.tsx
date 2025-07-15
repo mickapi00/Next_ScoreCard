@@ -3,7 +3,6 @@ import React, { use, useState } from "react";
 import { ScoreTotal } from "@/components/ui/ScoreTotal";
 import { ScoreButtons } from "@/components/ui/ScoreButtons";
 import { ScorecardTable } from "@/components/ui/ScorecardTable";
-import { cn } from "@/lib/utils";
 
 // Importing styles for the scorecard
 import "@/app/styles/scorecardStyle.css";

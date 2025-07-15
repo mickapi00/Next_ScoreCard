@@ -11,4 +11,4 @@ export const ScoreButtons = () => {
   );
 };
 
-ScoreButtons.displayName = "ScoreButtons";
+export default ScoreButtons;
