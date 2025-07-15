@@ -1,13 +1,30 @@
 "use client";
-import React, { use, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ScoreTotal } from "@/components/ui/ScoreTotal";
 import { ScoreButtons } from "@/components/ui/ScoreButtons";
 import { ScorecardTable } from "@/components/ui/ScorecardTable";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 // Importing styles for the scorecard
 import "@/app/styles/scorecardStyle.css";
+import { fetchMarkerByMarkersId } from "../services/scorecard.service";
+import { MarkersInterface } from "../@type/Markers.Interface";
+import { log } from "console";
 
 export default function ScorecardPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const layoutFront = searchParams.get("layoutfront");
+  const layoutBack = searchParams.get("layoutback");
+  const markerFront = searchParams.get("markerfront");
+  const markerBack = searchParams.get("markerback");
+  const date = searchParams.get("date");
+  const course = searchParams.get("course");
+  const Response = searchParams.get("response");
+  const [frontMarkerData, setFrontMarkerData] = useState<MarkersInterface>();
+  const [backMarkerData, setBackMarkerData] = useState<MarkersInterface>();
   const [scores, setScores] = useState<{ front: string[]; back: string[] }>({
     front: Array(9).fill(""),
     back: Array(9).fill(""),
@@ -24,6 +41,24 @@ export default function ScorecardPage() {
     newScores[nine][index] = value;
     setScores(newScores);
   };
+  useEffect(() => {
+    console.log("Fetching marker data for front and back markers", markerFront);
+    const load = async () => {
+      try {
+        if (markerFront) {
+          const frontData = await fetchMarkerByMarkersId(markerFront);
+          setFrontMarkerData(frontData);
+        }
+        if (markerBack) {
+          const backData = await fetchMarkerByMarkersId(markerBack);
+          setBackMarkerData(backData);
+        }
+      } catch (error) {
+        console.error("Error fetching marker data:", error);
+      }
+    };
+    load();
+  }, [markerFront, markerBack]); // ✅ ต้องใส่ dependency array!);
 
   const calculateNineTotal = (nine: "front" | "back") =>
     scores[nine].reduce((sum, val) => sum + (parseInt(val) || 0), 0);

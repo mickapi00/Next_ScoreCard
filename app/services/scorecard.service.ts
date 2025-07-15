@@ -23,8 +23,26 @@ export const fetchLayouts = async (
 export const fetchMarkers = async (
   courselayoutId: string
 ): Promise<MarkersInterface[]> => {
-  const res = await fetch(`${API_URL}/markers/courseLayoutId/${courselayoutId}`
+  const res = await fetch(
+    `${API_URL}/markers/courseLayoutId/${courselayoutId}`
   );
   if (!res.ok) throw new Error("Failed to fetch markers");
+  return res.json();
+};
+
+// export const fetchMarkerByMarkersId = async (
+//   markerId: string
+// ): Promise<MarkersInterface> => {
+//   console.log("Fetching marker with ID:", markerId);
+//   const res = await fetch(`${API_URL}/markers/markerId,${markerId}`);
+//   if (!res.ok) throw new Error(`Failed to fetch marker with ID ${markerId}`);
+//   return res.json();
+// };
+export const fetchMarkerByMarkersId = async (
+  markerId: string
+): Promise<MarkersInterface> => {
+  console.log("Fetching marker with ID:", markerId);
+  const res = await fetch(`${API_URL}/markers/markerId/${markerId}`);
+  if (!res.ok) throw new Error(`Failed to fetch marker with ID ${markerId}`);
   return res.json();
 };
