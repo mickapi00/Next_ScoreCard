@@ -11,7 +11,6 @@ import "@/app/styles/scorecardStyle.css";
 import { fetchMarkerByMarkersId } from "../services/scorecard.service";
 import { MarkersInterface } from "../@type/Markers.Interface";
 import { MarkerDetailsInterface } from "../@type/Markers.Details";
-import { log } from "console";
 
 export default function ScorecardPage() {
   const router = useRouter();
@@ -23,13 +22,14 @@ export default function ScorecardPage() {
   const date = searchParams.get("date");
   const course = searchParams.get("course");
   const response = searchParams.get("response");
-
   const [frontMarkerData, setFrontMarkerData] = useState<MarkersInterface>();
   const [backMarkerData, setBackMarkerData] = useState<MarkersInterface>();
   const [frontDetails, setFrontDetails] = useState<MarkerDetailsInterface[]>(
     []
   );
   const [backDetails, setBackDetails] = useState<MarkerDetailsInterface[]>([]);
+  const [frontPars, setFrontPars] = useState<number>(0);
+  const [backPars, setBackPars] = useState<number>(0);
   const [scores, setScores] = useState<{ front: string[]; back: string[] }>({
     front: Array(9).fill(""),
     back: Array(9).fill(""),
@@ -47,18 +47,22 @@ export default function ScorecardPage() {
 
   useEffect(() => {
     const load = async () => {
-      console.log("Fetching marker data", markerFront, markerBack);
-
       if (markerFront) {
         const frontDataArray = await fetchMarkerByMarkersId(markerFront);
         const frontData = frontDataArray[0];
         setFrontMarkerData(frontData);
+
         if (frontData.markerDetails) {
           const details = frontData.markerDetails;
           setFrontDetails(details);
-          console.log("Front 9:", details);
         } else {
           setFrontDetails([]);
+        }
+
+        if (frontData.totalPar) {
+          const Pars = frontData.totalPar;
+          setFrontPars(Pars);
+          console.log("This is pars ", frontPars);
         }
       }
 
@@ -69,9 +73,12 @@ export default function ScorecardPage() {
         if (backData.markerDetails) {
           const details = backData.markerDetails;
           setBackDetails(details);
-          console.log("Back 9:", details);
         } else {
           setBackDetails([]);
+        }
+        if (backData.totalPar) {
+          const Pars = backData.totalPar;
+          setBackPars(Pars);
         }
       }
     };
@@ -95,6 +102,8 @@ export default function ScorecardPage() {
         scores={scores.front}
         onScoreChange={(i, v) => handleScoreChange("front", i, v)}
         total={calculateNineTotal("front")}
+        halfscore={calculateNineTotal("front")}
+        totalpar={frontPars}
       />
 
       <ScorecardTable
@@ -105,6 +114,8 @@ export default function ScorecardPage() {
         scores={scores.back}
         onScoreChange={(i, v) => handleScoreChange("back", i, v)}
         total={calculateNineTotal("back")}
+        halfscore={calculateNineTotal("back")}
+        totalpar={backPars}
       />
 
       <ScoreTotal total={calculateTotalScore()} />

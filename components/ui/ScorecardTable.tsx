@@ -15,6 +15,8 @@ export interface ScorecardTableProps {
   scores: string[];
   total: number;
   handicaps: number[];
+  halfscore: number;
+  totalpar: number;
 
   onScoreChange: (index: number, value: string) => void;
 }
@@ -29,9 +31,10 @@ export const Inputprop = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={clsx(
-          "flex h-8 w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm",
+          "flex h-8 w-full rounded-md border border-gray-500 bg-white px-2 py-1 text-sm text-center mr-2",
           "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
           "disabled:cursor-not-allowed disabled:opacity-50",
+
           className
         )}
         ref={ref}
@@ -49,7 +52,16 @@ export const ScorecardTable = React.forwardRef<
   ScorecardTableProps
 >(
   (
-    { title, startHole, scores, total, pars, handicaps, onScoreChange },
+    {
+      title,
+      startHole,
+      scores,
+      totalpar,
+      pars,
+      handicaps,
+      halfscore,
+      onScoreChange,
+    },
     ref
   ) => {
     return (
@@ -72,7 +84,7 @@ export const ScorecardTable = React.forwardRef<
               {par}
             </div>
           ))}
-          <div className="scorecard-cell"> 36 </div>
+          <div className="scorecard-cell"> {totalpar} </div>
         </div>
 
         <div className="scorecard-row par-row">
@@ -100,7 +112,7 @@ export const ScorecardTable = React.forwardRef<
               />
             </div>
           ))}
-          <div className="scorecard-cell">{total || ""}</div>
+          <div className="scorecard-cell">{halfscore} </div>
         </div>
       </div>
     );
