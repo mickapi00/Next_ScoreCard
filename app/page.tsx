@@ -19,13 +19,16 @@ export default function ScorecardPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [courses, setCourses] = useState<CoursesInterface[]>([]);
   const [layouts, setLayout] = useState<LayoutsInterface[]>([]);
-  const [markers, setMarkers] = useState<MarkersInterface[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [selectedLayoutFront, setselectedLayoutFront] = useState<string>("");
   const [selectedLayoutBack, setselectedLayoutBack] = useState<string>("");
   const [selectedMarkerFront, setSelectedMarkerFront] = useState("");
   const [selectedMarkerBack, setSelectedMarkerBack] = useState("");
+  const [markerFrontList, setMarkerFrontList] = useState<MarkersInterface[]>(
+    []
+  );
+  const [markerBackList, setMarkerBackList] = useState<MarkersInterface[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -48,14 +51,35 @@ export default function ScorecardPage() {
   }, [selectedCourse]);
 
   useEffect(() => {
-    if (!selectedLayoutFront || !selectedLayoutBack) {
-      setMarkers([]);
-      setSelectedMarkerFront("");
-      setSelectedMarkerBack("");
+    if (!selectedLayoutFront) {
+      setMarkerFrontList([]);
       return;
     }
-    fetchMarkers(selectedLayoutBack).then(setMarkers).catch(console.error);
-  }, [selectedLayoutBack, selectedLayoutFront]);
+
+    fetchMarkers(selectedLayoutFront)
+      .then((data) => {
+        setMarkerFrontList(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching front markers:", err);
+        setMarkerFrontList([]);
+      });
+  }, [selectedLayoutFront]);
+
+  useEffect(() => {
+    if (!selectedLayoutBack) {
+      setMarkerBackList;
+    }
+
+    fetchMarkers(selectedLayoutBack)
+      .then((data) => {
+        setMarkerBackList(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching front markers:", err);
+        setMarkerBackList([]);
+      });
+  }, [selectedLayoutBack]);
 
   const handleSubmit = () => {
     const params = new URLSearchParams({
@@ -149,8 +173,8 @@ export default function ScorecardPage() {
               value={selectedMarkerFront}
               onChange={(e) => setSelectedMarkerFront(e.target.value)}
             >
-              <option value="">Select marker (Front)</option>
-              {markers.map((m) => (
+              <option value="">Select marker </option>
+              {markerFrontList.map((m) => (
                 <option key={m.markersId} value={m.markersId}>
                   {m.color}
                 </option>
@@ -165,8 +189,8 @@ export default function ScorecardPage() {
               value={selectedMarkerBack}
               onChange={(e) => setSelectedMarkerBack(e.target.value)}
             >
-              <option value="">Select marker (Back)</option>
-              {markers.map((m) => (
+              <option value="">Select marker </option>
+              {markerBackList.map((m) => (
                 <option key={m.markersId} value={m.markersId}>
                   {m.color}
                 </option>

@@ -1,4 +1,5 @@
-export interface MarkerDetailsInterface {
+export interface MarkerDetailsInterface 
+{
   holeNo: number;
   distance: number;
   parNo: number;

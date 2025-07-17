@@ -2,7 +2,6 @@
 import { CoursesInterface } from "../@type/Courses.Interface";
 import { LayoutsInterface } from "../@type/Layouts.Interface";
 import { MarkersInterface } from "../@type/Markers.Interface";
-import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -30,18 +29,9 @@ export const fetchMarkers = async (
   return res.json();
 };
 
-// export const fetchMarkerByMarkersId = async (
-//   markerId: string
-// ): Promise<MarkersInterface> => {
-//   console.log("Fetching marker with ID:", markerId);
-//   const res = await fetch(`${API_URL}/markers/markerId,${markerId}`);
-//   if (!res.ok) throw new Error(`Failed to fetch marker with ID ${markerId}`);
-//   return res.json();
-// };
 export const fetchMarkerByMarkersId = async (
   markerId: string
-): Promise<MarkersInterface> => {
-  console.log("Fetching marker with ID:", markerId);
+): Promise<MarkersInterface[]> => {
   const res = await fetch(`${API_URL}/markers/markerId/${markerId}`);
   if (!res.ok) throw new Error(`Failed to fetch marker with ID ${markerId}`);
   return res.json();
