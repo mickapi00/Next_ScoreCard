@@ -3,6 +3,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { postScorecard } from "@/app/services/scorecard.service";
 import type { ScorecardInterface } from "@/app/@type/ScoreCard.Interface";
+import "@/app/styles/selectedStyle.css";
 
 export interface ScoreButtonsProps {
   scorecardData: ScorecardInterface;
@@ -23,13 +24,11 @@ export const ScoreButtons: React.FC<ScoreButtonsProps> = ({
   };
 
   return (
-    <div className="flex gap-4 mt-4 justify-end">
-      <Button className="bg-gray-500 hover:bg-gray-600">Cancel</Button>
-      <Button
-        className="bg-green-600 hover:bg-green-700"
-        onClick={handlePostScorecard}
-      >
-        Post Score →
+    <div>
+      <Button className="cancel ">Cancel</Button>
+
+      <Button className="post" onClick={handlePostScorecard}>
+        Post Score{" "}
       </Button>
     </div>
   );

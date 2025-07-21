@@ -5,15 +5,16 @@ import { ScoreButtons } from "@/components/ui/ScoreButtons";
 import { ScorecardTable } from "@/components/ui/ScorecardTable";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import "@/app/styles/selectedStyle.css";
 
 // Importing styles for the scorecard
-import "@/app/styles/scorecardStyle.css";
 import { fetchMarkerByMarkersId } from "../services/scorecard.service";
 import { MarkersInterface } from "../@type/Markers.Interface";
 import { MarkerDetailsInterface } from "../@type/Markers.Details";
 import { ScoreInterface } from "../@type/Score.Interface";
 import { ScorecardInterface } from "../@type/ScoreCard.Interface";
 import { fetchMarkerId } from "../services/scorecard.service";
+import "@/app/styles/scorecardStyle.css";
 
 export default function ScorecardPage() {
   const router = useRouter();
@@ -169,15 +170,19 @@ export default function ScorecardPage() {
       <ScoreTotal total={calculateTotalScore()} />
       {/* <ScoreButtons scorecardData = {scores} /> */}
 
-      <button
-        className="bg-blue-600 hover:bg-blue-700 text-white mt-4"
-        onClick={handleSubmit}
-      >
+      <button className="submit" onClick={handleSubmit}>
         {" "}
         Generate Scorecard{" "}
       </button>
 
       {scorecardData && <ScoreButtons scorecardData={scorecardData} />}
+
+      <div className="progress-info">
+        2 of 2
+        <div className="progress-bar">
+          <div className="progress-full"></div>
+        </div>
+      </div>
     </div>
   );
 }

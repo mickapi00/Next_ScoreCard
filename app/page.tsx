@@ -8,11 +8,11 @@ import { format } from "date-fns";
 import { fetchCourses } from "./services/scorecard.service";
 import { fetchLayouts } from "./services/scorecard.service";
 import { fetchMarkers } from "./services/scorecard.service";
-
 import { CoursesInterface } from "./@type/Courses.Interface";
 import { LayoutsInterface } from "./@type/Layouts.Interface";
 import { MarkersInterface } from "@/app/@type/Markers.Interface";
 import { useRouter } from "next/navigation";
+import "@/app/styles/selectedStyle.css";
 
 export default function ScorecardPage() {
   const router = useRouter();
@@ -94,137 +94,127 @@ export default function ScorecardPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
-      <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Scorecard</h1>
-        <p className="text-gray-600 text-sm mb-6">
-          Store and archive scorecards for future reference.
-          <br />
-          Access round history for analysis or sharing.
-        </p>
-        <hr className="w-full border-t border-gray-200 mb-6" />
+    <div className="container">
+      <h1 className="h1">Scorecard</h1>
+      <p className="description">
+        Store and Archive Scorecards - Save completed rounds digitally for
+        future reference
+        <br />
+        Access Round History - Retrieve past games for analysis or sharing
+      </p>
+      <hr className="hr" />
 
-        <div className="space-y-6">
-          <div>
-            <Label className="block text-gray-700 text-sm font-bold mb-2">
-              Playing Date
-            </Label>
-            <Input
-              type="date"
-              value={format(date, "yyyy-MM-dd")}
-              onChange={(e) => setDate(new Date(e.target.value))}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+      <div className="form-group">
+        <Label className="label">Playing Date</Label>
+        <Input
+          type="date"
+          value={format(date, "yyyy-MM-dd")}
+          onChange={(e) => setDate(new Date(e.target.value))}
+          className="input"
+        />
+      </div>
 
-          <div>
-            <Label className="block text-gray-700 text-sm font-bold mb-2">
-              Golf Course
-            </Label>
-            {loadingCourses ? (
-              <div className="text-center text-gray-400">Loading...</div>
-            ) : (
-              <select
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={selectedCourse}
-                onChange={(e) => setSelectedCourse(e.target.value)}
-              >
-                <option value="">Select course</option>
-                {courses.map((c) => (
-                  <option key={c.courseId} value={c.courseId}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+      <div className="form-group">
+        <Label className="label">Golf Course</Label>
+        {loadingCourses ? (
+          <div className="loading">Loading...</div>
+        ) : (
+          <select
+            className="select"
+            value={selectedCourse}
+            onChange={(e) => setSelectedCourse(e.target.value)}
+          >
+            <option value="">Select an option</option>
+            {courses.map((c) => (
+              <option key={c.courseId} value={c.courseId}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
 
-          <div>
-            <Label className="block text-gray-700 text-sm font-bold mb-2">
-              Layout Front
-            </Label>
-            <select
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={selectedLayoutFront}
-              onChange={(e) => setselectedLayoutFront(e.target.value)}
-            >
-              <option value="">Select layout (Front)</option>
-              {layouts.map((l) => (
-                <option key={l.courselayoutId} value={l.courselayoutId}>
-                  {l.courselayout}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <Label className="block text-gray-700 text-sm font-bold mb-2">
-              Layout Back
-            </Label>
-            <select
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={selectedLayoutBack}
-              onChange={(e) => setselectedLayoutBack(e.target.value)}
-            >
-              <option value="">Select layout (Back)</option>
-              {layouts.map((l) => (
-                <option key={l.courselayoutId} value={l.courselayoutId}>
-                  {l.courselayout}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <Label className="block text-gray-700 text-sm font-bold mb-2">
-              Marker Front
-            </Label>
-            <select
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={selectedMarkerFront}
-              onChange={(e) => setSelectedMarkerFront(e.target.value)}
-            >
-              <option value="">Select marker</option>
-              {markerFrontList.map((m) => (
-                <option key={m.markersId} value={m.markersId}>
-                  {m.color}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <Label className="block text-gray-700 text-sm font-bold mb-2">
-              Marker Back
-            </Label>
-            <select
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={selectedMarkerBack}
-              onChange={(e) => setSelectedMarkerBack(e.target.value)}
-            >
-              <option value="">Select marker</option>
-              {markerBackList.map((m) => (
-                <option key={m.markersId} value={m.markersId}>
-                  {m.color}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <Button
-          className="w-full mt-6 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={handleSubmit}
-          disabled={
-            !selectedLayoutFront ||
-            !selectedLayoutBack ||
-            !selectedMarkerFront ||
-            !selectedMarkerBack
-          }
+      <div className="form-group">
+        <Label className="label">Layout Front</Label>
+        <select
+          className="select"
+          value={selectedLayoutFront}
+          onChange={(e) => setselectedLayoutFront(e.target.value)}
         >
-          Next
-        </Button>
-        <div className="mt-4 text-center text-gray-500">1 of 2</div>
+          <option value="">Select an option</option>
+          {layouts.map((l) => (
+            <option key={l.courselayoutId} value={l.courselayoutId}>
+              {l.courselayout}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <Label className="label">Layout Back</Label>
+        <select
+          className="select"
+          value={selectedLayoutBack}
+          onChange={(e) => setselectedLayoutBack(e.target.value)}
+        >
+          <option value="">Select an option</option>
+          {layouts.map((l) => (
+            <option key={l.courselayoutId} value={l.courselayoutId}>
+              {l.courselayout}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <Label className="label">Marker Front</Label>
+        <select
+          className="select"
+          value={selectedMarkerFront}
+          onChange={(e) => setSelectedMarkerFront(e.target.value)}
+        >
+          <option value="">Select an option</option>
+          {markerFrontList.map((m) => (
+            <option key={m.markersId} value={m.markersId}>
+              {m.color}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <Label className="label">Marker Back</Label>
+        <select
+          className="select"
+          value={selectedMarkerBack}
+          onChange={(e) => setSelectedMarkerBack(e.target.value)}
+        >
+          <option value="">Select an option</option>
+          {markerBackList.map((m) => (
+            <option key={m.markersId} value={m.markersId}>
+              {m.color}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <Button
+        className="button"
+        onClick={handleSubmit}
+        disabled={
+          !selectedLayoutFront ||
+          !selectedLayoutBack ||
+          !selectedMarkerFront ||
+          !selectedMarkerBack
+        }
+      >
+        Next
+      </Button>
+      <div className="progress-info">
+        1 of 2
+        <div className="progress-bar">
+          <div className="progress-fill"></div>
+        </div>
       </div>
     </div>
   );
