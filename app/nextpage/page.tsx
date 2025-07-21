@@ -11,6 +11,9 @@ import "@/app/styles/scorecardStyle.css";
 import { fetchMarkerByMarkersId } from "../services/scorecard.service";
 import { MarkersInterface } from "../@type/Markers.Interface";
 import { MarkerDetailsInterface } from "../@type/Markers.Details";
+import { ScoreInterface } from "../@type/Score.Interface";
+import { ScorecardInterface } from "../@type/ScoreCard.Interface";
+import { fetchMarkerId } from "../services/scorecard.service";
 
 export default function ScorecardPage() {
   const router = useRouter();
@@ -26,6 +29,9 @@ export default function ScorecardPage() {
   const [backMarkerData, setBackMarkerData] = useState<MarkersInterface>();
   const [frontDetails, setFrontDetails] = useState<MarkerDetailsInterface[]>(
     []
+  );
+  const [scorecardData, setScorecardData] = useState<ScorecardInterface | null>(
+    null
   );
   const [backDetails, setBackDetails] = useState<MarkerDetailsInterface[]>([]);
   const [frontPars, setFrontPars] = useState<number>(0);
@@ -47,39 +53,41 @@ export default function ScorecardPage() {
 
   useEffect(() => {
     const load = async () => {
-      if (markerFront) {
-        const frontDataArray = await fetchMarkerByMarkersId(markerFront);
-        const frontData = frontDataArray[0];
-        setFrontMarkerData(frontData);
+      // ต้องมีทั้งคู่ถึงจะ fetch
+      if (!markerFront || !markerBack) return;
 
-        if (frontData.markerDetails) {
-          const details = frontData.markerDetails;
-          setFrontDetails(details);
-        } else {
-          setFrontDetails([]);
-        }
+      try {
+        // เรียก API ครั้งเดียวด้วยทั้งสอง ID
+        const allData = await fetchMarkerId(markerFront, markerBack);
 
-        if (frontData.totalPar) {
-          const Pars = frontData.totalPar;
-          setFrontPars(Pars);
-          console.log("This is pars ", frontPars);
-        }
-      }
+        // แยกข้อมูลตาม ID
+        allData.forEach((markerData) => {
+          if (
+            markerData.markersId === markerFront ||
+            markerData.courseLayoutId === markerFront
+          ) {
+            setFrontMarkerData(markerData);
+            setFrontDetails(markerData.markerDetails || []);
+            if (markerData.totalPar) {
+              setFrontPars(markerData.totalPar);
+              console.log("Front", markerData);
+            }
+          }
 
-      if (markerBack) {
-        const backDataArray = await fetchMarkerByMarkersId(markerBack);
-        const backData = backDataArray[0];
-        setBackMarkerData(backData);
-        if (backData.markerDetails) {
-          const details = backData.markerDetails;
-          setBackDetails(details);
-        } else {
-          setBackDetails([]);
-        }
-        if (backData.totalPar) {
-          const Pars = backData.totalPar;
-          setBackPars(Pars);
-        }
+          if (
+            markerData.markersId === markerBack ||
+            markerData.courseLayoutId === markerBack
+          ) {
+            setBackMarkerData(markerData);
+            setBackDetails(markerData.markerDetails || []);
+            if (markerData.totalPar) {
+              setBackPars(markerData.totalPar);
+              console.log("Back", markerData);
+            }
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching markers:", error);
       }
     };
 
@@ -91,6 +99,46 @@ export default function ScorecardPage() {
 
   const calculateTotalScore = () =>
     calculateNineTotal("front") + calculateNineTotal("back");
+  const test = () => {
+    console.log();
+  };
+
+  const handleSubmit = () => {
+    const allScores: ScoreInterface[] = [];
+
+    // รวมข้อมูลจากหลุม 1–9 (front)
+    frontDetails.forEach((detail, index) => {
+      const scoreStr = scores.front[index];
+      console.log(scoreStr);
+      if (scoreStr !== "") {
+        allScores.push({
+          holes: detail.holeNo,
+          score: parseInt(scoreStr),
+        });
+      }
+    });
+
+    // รวมข้อมูลจากหลุม 10–18 (back)
+    backDetails.forEach((detail, index) => {
+      const scoreStr = scores.back[index];
+      if (scoreStr !== "") {
+        allScores.push({
+          holes: detail.holeNo,
+          score: parseInt(scoreStr),
+        });
+      }
+    });
+
+    const scorecard: ScorecardInterface = {
+      courseName: course || "Unknown Course",
+      totalScore: calculateTotalScore(),
+      totalIn: calculateNineTotal("back"),
+      totalOut: calculateNineTotal("front"),
+      score: allScores,
+    };
+    setScorecardData(scorecard);
+    console.log("Submitting Scorecard:", setScorecardData);
+  };
 
   return (
     <div className="scorecard-container">
@@ -119,7 +167,17 @@ export default function ScorecardPage() {
       />
 
       <ScoreTotal total={calculateTotalScore()} />
-      <ScoreButtons />
+      {/* <ScoreButtons scorecardData = {scores} /> */}
+
+      <button
+        className="bg-blue-600 hover:bg-blue-700 text-white mt-4"
+        onClick={handleSubmit}
+      >
+        {" "}
+        Generate Scorecard{" "}
+      </button>
+
+      {scorecardData && <ScoreButtons scorecardData={scorecardData} />}
     </div>
   );
 }

@@ -68,7 +68,7 @@ export default function ScorecardPage() {
 
   useEffect(() => {
     if (!selectedLayoutBack) {
-      setMarkerBackList;
+      setMarkerBackList([]);
     }
 
     fetchMarkers(selectedLayoutBack)
@@ -95,32 +95,37 @@ export default function ScorecardPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
-      <div className="w-80 min-h-[600px] flex flex-col space-y-6 p-8 border shadow-2xl rounded-3xl bg-white">
-        <h1 className="text-3xl font-bold text-gray-900 mb-1">Scorecard </h1>
-        <p className="text-gray-500 text-sm text-center mb-6">
+      <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">Scorecard</h1>
+        <p className="text-gray-600 text-sm mb-6">
           Store and archive scorecards for future reference.
           <br />
           Access round history for analysis or sharing.
         </p>
-        <hr className="w-full border-t border-gray-200 mb-4" />
+        <hr className="w-full border-t border-gray-200 mb-6" />
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <Label>Playing Date</Label>
+            <Label className="block text-gray-700 text-sm font-bold mb-2">
+              Playing Date
+            </Label>
             <Input
               type="date"
               value={format(date, "yyyy-MM-dd")}
               onChange={(e) => setDate(new Date(e.target.value))}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <Label>Golf Course</Label>
+            <Label className="block text-gray-700 text-sm font-bold mb-2">
+              Golf Course
+            </Label>
             {loadingCourses ? (
               <div className="text-center text-gray-400">Loading...</div>
             ) : (
               <select
-                className="w-full border rounded p-2"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
               >
@@ -135,9 +140,11 @@ export default function ScorecardPage() {
           </div>
 
           <div>
-            <Label>Layout Front</Label>
+            <Label className="block text-gray-700 text-sm font-bold mb-2">
+              Layout Front
+            </Label>
             <select
-              className="w-full border rounded p-2"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={selectedLayoutFront}
               onChange={(e) => setselectedLayoutFront(e.target.value)}
             >
@@ -151,9 +158,11 @@ export default function ScorecardPage() {
           </div>
 
           <div>
-            <Label>Layout Back</Label>
+            <Label className="block text-gray-700 text-sm font-bold mb-2">
+              Layout Back
+            </Label>
             <select
-              className="w-full border rounded p-2 bg-red-100"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={selectedLayoutBack}
               onChange={(e) => setselectedLayoutBack(e.target.value)}
             >
@@ -167,13 +176,15 @@ export default function ScorecardPage() {
           </div>
 
           <div>
-            <Label>Marker Front</Label>
+            <Label className="block text-gray-700 text-sm font-bold mb-2">
+              Marker Front
+            </Label>
             <select
-              className="w-full border rounded p-2"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={selectedMarkerFront}
               onChange={(e) => setSelectedMarkerFront(e.target.value)}
             >
-              <option value="">Select marker </option>
+              <option value="">Select marker</option>
               {markerFrontList.map((m) => (
                 <option key={m.markersId} value={m.markersId}>
                   {m.color}
@@ -183,13 +194,15 @@ export default function ScorecardPage() {
           </div>
 
           <div>
-            <Label>Marker Back</Label>
+            <Label className="block text-gray-700 text-sm font-bold mb-2">
+              Marker Back
+            </Label>
             <select
-              className="w-full border rounded p-2"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={selectedMarkerBack}
               onChange={(e) => setSelectedMarkerBack(e.target.value)}
             >
-              <option value="">Select marker </option>
+              <option value="">Select marker</option>
               {markerBackList.map((m) => (
                 <option key={m.markersId} value={m.markersId}>
                   {m.color}
@@ -200,7 +213,7 @@ export default function ScorecardPage() {
         </div>
 
         <Button
-          className="w-full mt-4 bg-black text-white py-3 rounded-xl"
+          className="w-full mt-6 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           onClick={handleSubmit}
           disabled={
             !selectedLayoutFront ||
@@ -211,6 +224,7 @@ export default function ScorecardPage() {
         >
           Next
         </Button>
+        <div className="mt-4 text-center text-gray-500">1 of 2</div>
       </div>
     </div>
   );

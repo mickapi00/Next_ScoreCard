@@ -1,7 +1,5 @@
 import * as React from "react";
 import clsx from "clsx";
-import { MarkerDetailsInterface } from "@/app/@type/Markers.Details";
-import { MarkersInterface } from "@/app/@type/Markers.Interface";
 
 // Simple cn utility function
 // const cn = (...classes: (string | undefined)[]) => {

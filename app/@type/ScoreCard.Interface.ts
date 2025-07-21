@@ -1,11 +1,9 @@
-export interface ScorecardInterface 
-{
-courseId: string
-courseName: string
-totalScore: number
-totalIn: number
-totalOut: number
-reserveId: number
-score: any[]
+import { ScoreInterface } from "./Score.Interface";
 
+export interface ScorecardInterface {
+  courseName: string;
+  totalScore: number;
+  totalIn: number;
+  totalOut: number;
+  score: ScoreInterface[];
 }

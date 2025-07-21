@@ -1,6 +1,7 @@
 import { MarkerDetailsInterface } from "./Markers.Details";
 
-export interface MarkersInterface {
+export interface MarkersInterface 
+{
   _id: string;
   courseName: string;
   markersId: string;
