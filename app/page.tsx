@@ -98,9 +98,7 @@ export default function ScorecardPage() {
       <h1 className="h1">Scorecard</h1>
       <p className="description">
         Store and Archive Scorecards - Save completed rounds digitally for
-        future reference
-        <br />
-        Access Round History - Retrieve past games for analysis or sharing
+        future reference access Round History - Retrieve past games for analysis or sharing.
       </p>
       <hr className="hr" />
 

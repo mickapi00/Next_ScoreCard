@@ -113,6 +113,35 @@ hr {
   transition: background-color 0.15s;
 }
 
+
+.cancel {
+  width: 10%;
+  margin-top: 20px;
+  background-color: #1f2937;
+  color: white;
+  padding: 10px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.post {
+  width: 10%;
+  margin-top: 20px;
+  background-color: #1f2937;
+  color: white;
+  padding: 10px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
 .button:hover:not(:disabled) {
   background-color: #374151;
 }

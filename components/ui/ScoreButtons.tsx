@@ -23,14 +23,6 @@ export const ScoreButtons: React.FC<ScoreButtonsProps> = ({
     }
   };
 
-  return (
-    <div>
-      <Button className="cancel ">Cancel</Button>
-
-      <Button className="post" onClick={handlePostScorecard}>
-        Post Score{" "}
-      </Button>
-    </div>
-  );
+  return <div></div>;
 };
 export default ScoreButtons;

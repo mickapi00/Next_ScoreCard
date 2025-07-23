@@ -1,0 +1,67 @@
+.course-header {
+  background: linear-gradient(135deg, #dbeff5, #dbeff5);
+  color: rgb(0, 0, 0);
+  padding: 0.25rem 0.75rem; /* ขอบรอบๆเล็กลง */
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(13, 211, 20, 0.1);
+  text-align: left; /* เปลี่ยนจาก center */
+}
+
+.course-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.course-info {
+  flex: 1;
+  text-align: center;
+}
+
+.course-title {
+  display: flex;
+  justify-content: left;
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+}
+/* ไว้สำหรับเปลี่ยน ขนาด ข้อมูลจาก Params */
+.course-meta {
+  display: flex;
+  justify-content: left;
+  gap: 0.225rem;
+  font-size: 0.875rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: bold;
+  opacity: 6;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.course-header-divider {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .course-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .course-title {
+    font-size: 1.25rem;
+  }
+}

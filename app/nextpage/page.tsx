@@ -3,9 +3,13 @@ import React, { useState, useEffect } from "react";
 import { ScoreTotal } from "@/components/ui/ScoreTotal";
 import { ScoreButtons } from "@/components/ui/ScoreButtons";
 import { ScorecardTable } from "@/components/ui/ScorecardTable";
+import { CourseDescriptionHeader } from "@/components/ui/CourseDescriptionHeader";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { postScorecard } from "../services/scorecard.service";
 import "@/app/styles/selectedStyle.css";
+import "@/app/styles/scorecardStyle.css";
+import "@/app/styles/descriptionStyle.css";
 
 // Importing styles for the scorecard
 import { fetchMarkerByMarkersId } from "../services/scorecard.service";
@@ -14,7 +18,6 @@ import { MarkerDetailsInterface } from "../@type/Markers.Details";
 import { ScoreInterface } from "../@type/Score.Interface";
 import { ScorecardInterface } from "../@type/ScoreCard.Interface";
 import { fetchMarkerId } from "../services/scorecard.service";
-import "@/app/styles/scorecardStyle.css";
 
 export default function ScorecardPage() {
   const router = useRouter();
@@ -34,6 +37,9 @@ export default function ScorecardPage() {
   const [scorecardData, setScorecardData] = useState<ScorecardInterface | null>(
     null
   );
+
+  const [frontlayouts, setFrontlayouts] = useState<string | null>(null);
+  const [backlayouts, setBacklayouts] = useState<string | null>(null);
   const [backDetails, setBackDetails] = useState<MarkerDetailsInterface[]>([]);
   const [frontPars, setFrontPars] = useState<number>(0);
   const [backPars, setBackPars] = useState<number>(0);
@@ -65,10 +71,12 @@ export default function ScorecardPage() {
         allData.forEach((markerData) => {
           if (
             markerData.markersId === markerFront ||
-            markerData.courseLayoutId === markerFront
+            markerData.courseLayoutId === markerFront ||
+            markerData.courseName === markerFront
           ) {
             setFrontMarkerData(markerData);
             setFrontDetails(markerData.markerDetails || []);
+
             if (markerData.totalPar) {
               setFrontPars(markerData.totalPar);
               console.log("Front", markerData);
@@ -77,7 +85,8 @@ export default function ScorecardPage() {
 
           if (
             markerData.markersId === markerBack ||
-            markerData.courseLayoutId === markerBack
+            markerData.courseLayoutId === markerBack ||
+            markerData.courseName === markerBack
           ) {
             setBackMarkerData(markerData);
             setBackDetails(markerData.markerDetails || []);
@@ -104,13 +113,11 @@ export default function ScorecardPage() {
     console.log();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const allScores: ScoreInterface[] = [];
 
-    // รวมข้อมูลจากหลุม 1–9 (front)
     frontDetails.forEach((detail, index) => {
       const scoreStr = scores.front[index];
-      console.log(scoreStr);
       if (scoreStr !== "") {
         allScores.push({
           holes: detail.holeNo,
@@ -119,7 +126,6 @@ export default function ScorecardPage() {
       }
     });
 
-    // รวมข้อมูลจากหลุม 10–18 (back)
     backDetails.forEach((detail, index) => {
       const scoreStr = scores.back[index];
       if (scoreStr !== "") {
@@ -137,12 +143,33 @@ export default function ScorecardPage() {
       totalOut: calculateNineTotal("front"),
       score: allScores,
     };
-    setScorecardData(scorecard);
-    console.log("Submitting Scorecard:", setScorecardData);
+
+    try {
+      setScorecardData(scorecard); // update state
+      const result = await postScorecard(scorecard); // post to backend
+      console.log("Scorecard posted:", result);
+      alert("Scorecard submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting scorecard:", error);
+      alert("Failed to submit scorecard");
+    }
   };
 
   return (
     <div className="scorecard-container">
+      <CourseDescriptionHeader
+        courseName={
+          frontMarkerData?.courseName ||
+          backMarkerData?.courseName ||
+          "Golf Course"
+        }
+        date={date}
+        layoutFront={layoutFront}
+        layoutBack={layoutBack}
+        markerColorFront={frontMarkerData?.color || "#CCCCCC"}
+        markerColorBack={backMarkerData?.color || "#CCCCCC"}
+      />
+
       <ScorecardTable
         title="OUT"
         startHole={1}
@@ -172,10 +199,8 @@ export default function ScorecardPage() {
 
       <button className="submit" onClick={handleSubmit}>
         {" "}
-        Generate Scorecard{" "}
+        Submit Score{" "}
       </button>
-
-      {scorecardData && <ScoreButtons scorecardData={scorecardData} />}
 
       <div className="progress-info">
         2 of 2

@@ -103,7 +103,12 @@ export const ScorecardTable = React.forwardRef<
                 type="number"
                 className="score-input"
                 value={score}
-                onChange={(e) => onScoreChange(index, e.target.value)}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  if (value >= 1 || e.target.value === "") {
+                    onScoreChange(index, e.target.value);
+                  }
+                }}
                 min="1"
                 max="15"
                 placeholder="0"
