@@ -11,6 +11,24 @@ export interface CourseDescriptionHeaderProps {
   markerColorBack: string;
 }
 
+// ฟังก์ชันสำหรับกำหนดสีตัวอักษรตามสีพื้นหลัง
+const getTextColor = (backgroundColor: string): string => {
+  const color = backgroundColor.toLowerCase();
+
+  // สีขาวและเหลือง → ใช้ตัวอักษรสีดำ
+  if (color === "white" || color === "yellow") {
+    return "#333333";
+  }
+
+  // สีแดง น้ำเงิน ดำ → ใช้ตัวอักษรสีขาว
+  if (color === "red" || color === "blue" || color === "black") {
+    return "#ffffff";
+  }
+
+  // default สำหรับสีอื่นๆ
+  return "#333333";
+};
+
 export const CourseDescriptionHeader = React.forwardRef<
   HTMLDivElement,
   CourseDescriptionHeaderProps
@@ -57,7 +75,7 @@ export const CourseDescriptionHeader = React.forwardRef<
                         className="marker-color-button"
                         style={{
                           backgroundColor: markerColorFront,
-                          color: "#222222",
+                          color: getTextColor(markerColorFront),
                           border: "none",
                           borderRadius: "8px",
                           padding: "0.4rem 0.8rem",
@@ -75,7 +93,7 @@ export const CourseDescriptionHeader = React.forwardRef<
                         className="marker-color-button"
                         style={{
                           backgroundColor: markerColorBack,
-                          color: "#222222",
+                          color: getTextColor(markerColorBack),
                           border: "none",
                           borderRadius: "8px",
                           padding: "0.4rem 0.8rem",

@@ -13,13 +13,14 @@ import { LayoutsInterface } from "./@type/Layouts.Interface";
 import { MarkersInterface } from "@/app/@type/Markers.Interface";
 import { useRouter } from "next/navigation";
 import "@/app/styles/selectedStyle.css";
+import { Underdog } from "next/font/google";
 
 export default function ScorecardPage() {
   const router = useRouter();
   const [date, setDate] = useState<Date>(new Date());
   const [courses, setCourses] = useState<CoursesInterface[]>([]);
   const [layouts, setLayout] = useState<LayoutsInterface[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<string>("");
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [selectedLayoutFront, setselectedLayoutFront] = useState<string>("");
   const [selectedLayoutBack, setselectedLayoutBack] = useState<string>("");
@@ -29,6 +30,26 @@ export default function ScorecardPage() {
     []
   );
   const [markerBackList, setMarkerBackList] = useState<MarkersInterface[]>([]);
+
+  const handleSelectcourseId = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value;
+    setSelectedCourse(selectedValue);
+    console.log("Selected courseId:", selectedValue);
+
+    // Reset layout and marker selections when course changes
+    setselectedLayoutFront("");
+    setselectedLayoutBack("");
+    setSelectedMarkerFront("");
+    setSelectedMarkerBack("");
+    setMarkerFrontList([]);
+    setMarkerBackList([]);
+
+    if (selectedValue) {
+      fetchLayouts(selectedValue).then(setLayout).catch(console.error);
+    } else {
+      setLayout([]);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -45,14 +66,14 @@ export default function ScorecardPage() {
     load();
   }, []);
 
+  // Fixed useEffect for front markers
   useEffect(() => {
-    if (!selectedCourse) return;
-    fetchLayouts(selectedCourse).then(setLayout).catch(console.error);
-  }, [selectedCourse]);
+    // Clear markers first
+    setMarkerFrontList([]);
+    console.log("hello", selectedLayoutFront);
 
-  useEffect(() => {
-    if (!selectedLayoutFront) {
-      setMarkerFrontList([]);
+    // Only fetch if a layout is selected (not empty)
+    if (selectedLayoutFront === "" || !selectedLayoutFront) {
       return;
     }
 
@@ -66,9 +87,14 @@ export default function ScorecardPage() {
       });
   }, [selectedLayoutFront]);
 
+  // Fixed useEffect for back markers
   useEffect(() => {
-    if (!selectedLayoutBack) {
-      setMarkerBackList([]);
+    // Clear markers first
+    setMarkerBackList([]);
+
+    // Only fetch if a layout is selected (not empty)
+    if (selectedLayoutBack === "" || !selectedLayoutBack) {
+      return;
     }
 
     fetchMarkers(selectedLayoutBack)
@@ -76,12 +102,13 @@ export default function ScorecardPage() {
         setMarkerBackList(data);
       })
       .catch((err) => {
-        console.error("Error fetching front markers:", err);
+        console.error("Error fetching back markers:", err);
         setMarkerBackList([]);
       });
   }, [selectedLayoutBack]);
 
   const handleSubmit = () => {
+    if (!selectedCourse) return;
     const params = new URLSearchParams({
       layoutfront: selectedLayoutFront,
       layoutback: selectedLayoutBack,
@@ -95,11 +122,7 @@ export default function ScorecardPage() {
 
   return (
     <div className="container">
-      <h1 className="h1">Scorecard</h1>
-      <p className="description">
-        Store and Archive Scorecards - Save completed rounds digitally for
-        future reference access Round History - Retrieve past games for analysis or sharing.
-      </p>
+      <h1 className="h1">Scorecard System</h1>
       <hr className="hr" />
 
       <div className="form-group">
@@ -119,8 +142,8 @@ export default function ScorecardPage() {
         ) : (
           <select
             className="select"
-            value={selectedCourse}
-            onChange={(e) => setSelectedCourse(e.target.value)}
+            value={selectedCourse || ""}
+            onChange={handleSelectcourseId}
           >
             <option value="">Select an option</option>
             {courses.map((c) => (

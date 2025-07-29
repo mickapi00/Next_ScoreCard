@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ScoreTotal } from "@/components/ui/ScoreTotal";
-import { ScoreButtons } from "@/components/ui/ScoreButtons";
 import { ScorecardTable } from "@/components/ui/ScorecardTable";
 import { CourseDescriptionHeader } from "@/components/ui/CourseDescriptionHeader";
 import { useSearchParams } from "next/navigation";
@@ -18,6 +17,7 @@ import { MarkerDetailsInterface } from "../@type/Markers.Details";
 import { ScoreInterface } from "../@type/Score.Interface";
 import { ScorecardInterface } from "../@type/ScoreCard.Interface";
 import { fetchMarkerId } from "../services/scorecard.service";
+import ScorecardLegend from "@/components/ui/ScorecardLegend";
 
 export default function ScorecardPage() {
   const router = useRouter();
@@ -56,6 +56,21 @@ export default function ScorecardPage() {
     const newScores = { ...scores };
     newScores[nine][index] = value;
     setScores(newScores);
+  };
+
+  // ฟังก์ชันเช็คว่ากรอกครบทุกช่องหรือไม่
+  const isAllScoresFilled = (): boolean => {
+    // เช็ค front 9 holes
+    const frontFilled = scores.front.every((score, index) => {
+      return index < frontDetails.length ? score.trim() !== "" : true;
+    });
+
+    // เช็ค back 9 holes
+    const backFilled = scores.back.every((score, index) => {
+      return index < backDetails.length ? score.trim() !== "" : true;
+    });
+
+    return frontFilled && backFilled;
   };
 
   useEffect(() => {
@@ -109,11 +124,22 @@ export default function ScorecardPage() {
 
   const calculateTotalScore = () =>
     calculateNineTotal("front") + calculateNineTotal("back");
+
   const test = () => {
     console.log();
   };
 
+  // Remove these functions from here since they're now in the ScorecardTable component
+  // const getScoreBackground = (score: string, par: number) => { ... }
+  // const getScoreClass = (scoreStr: string, par: number): string => { ... }
+
   const handleSubmit = async () => {
+    // เช็คว่ากรอกครบหรือไม่ก่อน submit
+    if (!isAllScoresFilled()) {
+      alert("กรุณากรอกคะแนนให้ครบทุกหลุม");
+      return;
+    }
+
     const allScores: ScoreInterface[] = [];
 
     frontDetails.forEach((detail, index) => {
@@ -149,6 +175,8 @@ export default function ScorecardPage() {
       const result = await postScorecard(scorecard); // post to backend
       console.log("Scorecard posted:", result);
       alert("Scorecard submitted successfully!");
+
+      router.push("/");
     } catch (error) {
       console.error("Error submitting scorecard:", error);
       alert("Failed to submit scorecard");
@@ -166,9 +194,10 @@ export default function ScorecardPage() {
         date={date}
         layoutFront={layoutFront}
         layoutBack={layoutBack}
-        markerColorFront={frontMarkerData?.color || "#CCCCCC"}
-        markerColorBack={backMarkerData?.color || "#CCCCCC"}
+        markerColorFront={frontMarkerData?.colorCode || "#CCCCCC"}
+        markerColorBack={backMarkerData?.colorCode || "#CCCCCC"}
       />
+      <ScorecardLegend />
 
       <ScorecardTable
         title="OUT"
@@ -176,7 +205,8 @@ export default function ScorecardPage() {
         pars={frontDetails.map((d) => d.parNo)}
         handicaps={frontDetails.map((d) => d.handicap)}
         scores={scores.front}
-        onScoreChange={(i, v) => handleScoreChange("front", i, v)}
+        nine="front" // Added this prop
+        onScoreChange={handleScoreChange} // Updated to use the correct signature
         total={calculateNineTotal("front")}
         halfscore={calculateNineTotal("front")}
         totalpar={frontPars}
@@ -188,7 +218,8 @@ export default function ScorecardPage() {
         pars={backDetails.map((d) => d.parNo)}
         handicaps={backDetails.map((d) => d.handicap)}
         scores={scores.back}
-        onScoreChange={(i, v) => handleScoreChange("back", i, v)}
+        nine="back" // Added this prop
+        onScoreChange={handleScoreChange} // Updated to use the correct signature
         total={calculateNineTotal("back")}
         halfscore={calculateNineTotal("back")}
         totalpar={backPars}
@@ -197,9 +228,16 @@ export default function ScorecardPage() {
       <ScoreTotal total={calculateTotalScore()} />
       {/* <ScoreButtons scorecardData = {scores} /> */}
 
-      <button className="submit" onClick={handleSubmit}>
-        {" "}
-        Submit Score{" "}
+      <button
+        className={`submit ${!isAllScoresFilled() ? "disabled" : ""}`}
+        onClick={handleSubmit}
+        disabled={!isAllScoresFilled()}
+        style={{
+          opacity: isAllScoresFilled() ? 1 : 0.5,
+          cursor: isAllScoresFilled() ? "pointer" : "not-allowed",
+        }}
+      >
+        Submit Score
       </button>
 
       <div className="progress-info">
